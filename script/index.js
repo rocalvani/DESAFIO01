@@ -8,7 +8,7 @@ class ProductManager {
     this.thumbnail = thumbnail;
     this.code = code;
     this.stock = stock;
-    this.id = 0;
+    this.id;
   }
 
   addProduct() {
@@ -29,7 +29,7 @@ class ProductManager {
         products.push(this);
       }
     }
-    this.id++;
+    this.id = products.length;
   }
 
   static getProducts() {
