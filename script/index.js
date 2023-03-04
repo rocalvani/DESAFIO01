@@ -1,7 +1,12 @@
-const products = [];
+const fs = require("fs");
+const files = "./files";
+const file = files + "/products.json";
+
+let products = [];
 
 class ProductManager {
   constructor(title, description, price, thumbnail, code, stock) {
+    this.nameFile = file;
     this.title = title;
     this.description = description;
     this.price = price;
@@ -11,7 +16,9 @@ class ProductManager {
     this.id;
   }
 
-  addProduct() {
+  async addProduct() {
+    if (!fs.existsSync(files)){await fs.promises.mkdir(files, { recursive: true });
+    await fs.promises.writeFile(file, JSON.stringify(products));}
     let found = products.find((i) => i.code == this.code);
     if (found) {
       console.log("cannot push products with the same code ");
@@ -26,29 +33,75 @@ class ProductManager {
       ) {
         console.log("product is incomplete");
       } else {
-        products.push(this);
+      products.push(this);
+        this.id = products.length;
+        await fs.promises.writeFile(file, JSON.stringify(products));
       }
     }
-    this.id = products.length;
+      
+      
   }
 
-  static getProducts() {
-    return products;
-  }
-
-  static getProductById(id) {
-    let found = products.find((el) => el.id == id);
-    if (found) {
-      return found;
+  static async getProducts() {
+    if (products.length == 0) {
+      console.log(products)
     } else {
-      return "item not found";
+      if (fs.existsSync(file)){
+        let string = await fs.promises.readFile(file, "utf-8");
+      let content = JSON.parse(string);
+      console.log(content)
+      }
     }
   }
+
+  static async getProductById(id) {
+    let string = await fs.promises.readFile(file, "utf-8");
+    let content = JSON.parse(string);
+    let found = content.find((el) => el.id == id);
+    if (found) {
+    console.log(found);
+    } else {
+      console.log("Item's not been found.");
+    }
+  }
+
+  static async updateProduct(id, change, desc) {
+    let string = await fs.promises.readFile(file, "utf-8");
+    let content = JSON.parse(string);
+    let found = content.find((el) => el.id == id);
+    if (found) {
+      if (change == "id") {
+        console.log("ID's cannot be modified.");
+      } else {
+        found[change] = desc;
+        products = content.filter((el) => el.id != id);
+        products.push(found);
+        await fs.promises.writeFile(file, JSON.stringify(products));
+      }
+    } else {
+      console.log("Product cannot be updated, as it does not exist.");
+    }
+  }
+
+  static async deleteProduct(id) {
+    let string = await fs.promises.readFile(file, "utf-8");
+    let content = JSON.parse(string);
+    let found = content.find((el) => el.id == id);
+    if (found) {
+      let filter = content.filter((el) => el.id != id);
+      products = filter;
+      await fs.promises.writeFile(file, JSON.stringify(products));
+    } else {
+      console.log("Product cannot be deleted, as it does not exist.");
+    }
+  }
+
 }
 
-console.log(ProductManager.getProducts());
+ProductManager.getProducts();
 
 const i1 = new ProductManager(
+
   "prueba 1",
   "esta es la prueba 1",
   200,
@@ -57,6 +110,7 @@ const i1 = new ProductManager(
   24
 );
 const i2 = new ProductManager(
+
   "prueba 2",
   "esta es la prueba 2",
   600,
@@ -65,6 +119,7 @@ const i2 = new ProductManager(
   24
 );
 const i3 = new ProductManager(
+
   "prueba 3",
   "esta es la prueba 3",
   800,
@@ -75,13 +130,33 @@ const i3 = new ProductManager(
 
 const i4 = new ProductManager("prueba 4", "esta es la prueba 4");
 
+const i5 = new ProductManager(
+
+  "prueba 5",
+  "esta es la prueba 5",
+  700,
+  "sin imagen",
+  "abc504",
+  455
+);
 
 i1.addProduct();
 i2.addProduct();
 i3.addProduct();
 i4.addProduct();
+i5.addProduct();
 
-console.log(ProductManager.getProducts());
+ProductManager.getProducts();
 
-console.log(ProductManager.getProductById(1));
-console.log(ProductManager.getProductById(5));
+ProductManager.getProductById(1);
+ProductManager.getProductById(5);
+
+ProductManager.updateProduct(1, "code", "abx333");
+ProductManager.updateProduct(8, "code", "abx333");
+
+setTimeout(() => {
+  ProductManager.deleteProduct(2);
+  ProductManager.deleteProduct(7);
+}, 2000);
+
+
