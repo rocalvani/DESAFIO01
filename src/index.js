@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from 'fs'
 const files = "./files";
 const file = files + "/products.json";
 
@@ -43,15 +43,13 @@ class ProductManager {
   }
 
   static async getProducts() {
-    if (products.length == 0) {
-      console.log(products)
-    } else {
+    
       if (fs.existsSync(file)){
         let string = await fs.promises.readFile(file, "utf-8");
       let content = JSON.parse(string);
-      console.log(content)
+      return content
       }
-    }
+    
   }
 
   static async getProductById(id) {
@@ -59,9 +57,9 @@ class ProductManager {
     let content = JSON.parse(string);
     let found = content.find((el) => el.id == id);
     if (found) {
-    console.log(found);
+      return found
     } else {
-      console.log("Item's not been found.");
+      return("This product is unavailable. Please try another.")
     }
   }
 
@@ -98,7 +96,7 @@ class ProductManager {
 
 }
 
-ProductManager.getProducts();
+// ProductManager.getProducts();
 
 const i1 = new ProductManager(
 
@@ -140,23 +138,23 @@ const i5 = new ProductManager(
   455
 );
 
-i1.addProduct();
-i2.addProduct();
-i3.addProduct();
-i4.addProduct();
-i5.addProduct();
+// i1.addProduct();
+// i2.addProduct();
+// i3.addProduct();
+// i4.addProduct();
+// i5.addProduct();
 
-ProductManager.getProducts();
+// ProductManager.getProducts();
 
-ProductManager.getProductById(1);
-ProductManager.getProductById(5);
+// ProductManager.getProductById(1);
+// ProductManager.getProductById(5);
 
-ProductManager.updateProduct(1, "code", "abx333");
-ProductManager.updateProduct(8, "code", "abx333");
+// ProductManager.updateProduct(1, "code", "abx333");
+// ProductManager.updateProduct(8, "code", "abx333");
 
-setTimeout(() => {
-  ProductManager.deleteProduct(2);
-  ProductManager.deleteProduct(7);
-}, 2000);
+// setTimeout(() => {
+//   ProductManager.deleteProduct(2);
+//   ProductManager.deleteProduct(7);
+// }, 2000);
 
-
+export default ProductManager
